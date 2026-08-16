@@ -1,21 +1,22 @@
 # finch-sparseBERT
 
-CPU extractive question answering with unstructured-sparse oBERT and [finch-tensor](https://github.com/finch-tensor/finch-tensor) SpMM.
+CPU hosted question answering with unstructured-sparse oBERT and [finch-tensor](https://github.com/finch-tensor/finch-tensor) SpMM.
 
-This is an experimental Finch project. Pruned Linear layers run as CSR SpMM in Finch. There is no SciPy, NumPy, or PyTorch runtime fallback for that kernel.
+This is an experimental Finch project testing finch-tensor for language modeling. Pruned Linear layers run as CSR SpMM in Finch.
 
 The default checkpoint is [RedHatAI/oBERT-12-upstream-pruned-unstructured-90-finetuned-squadv1](https://huggingface.co/RedHatAI/oBERT-12-upstream-pruned-unstructured-90-finetuned-squadv1).
 
 ## Setup
 
-Python 3.12+ and [uv](https://docs.astral.sh/uv/) are required. On macOS ARM, Numba pulls a prebuilt `llvmlite` wheel; raise the download timeout instead of installing LLVM.
+Python 3.12+ and [uv](https://docs.astral.sh/uv/) are required.
+Alternatively, you could manually build virtual environment and use `pip install`.
 
 ```bash
 UV_HTTP_TIMEOUT=300 uv sync --group dev
 uv run pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg
 ```
 
-If PyPI is slow:
+If PyPI is unstable in some regions (e.g., China):
 
 ```bash
 export UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
