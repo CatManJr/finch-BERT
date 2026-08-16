@@ -1,0 +1,110 @@
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+  - commit-msg
+default_stages:
+  - pre-commit
+
+repos:
+  - repo: local
+    hooks:
+      - id: trailing-whitespace
+        name: trailing whitespace
+        language: system
+        entry: uv run python tools/file_hygiene.py trailing-whitespace
+        types: [text]
+      - id: end-of-file
+        name: end of file newline
+        language: system
+        entry: uv run python tools/file_hygiene.py end-of-file
+        types: [text]
+      - id: mixed-line-ending
+        name: mixed line ending
+        language: system
+        entry: uv run python tools/file_hygiene.py mixed-line-ending
+        types: [text]
+      - id: check-json
+        name: check json
+        language: system
+        entry: uv run python tools/file_hygiene.py check-json
+        types: [json]
+      - id: check-toml
+        name: check toml
+        language: system
+        entry: uv run python tools/file_hygiene.py check-toml
+        types: [toml]
+      - id: check-yaml
+        name: check yaml
+        language: system
+        entry: uv run python tools/file_hygiene.py check-yaml
+        types: [yaml]
+      - id: merge-conflict
+        name: merge conflict markers
+        language: system
+        entry: uv run python tools/file_hygiene.py merge-conflict
+        types: [text]
+      - id: large-files
+        name: large files
+        language: system
+        entry: uv run python tools/file_hygiene.py large-files
+      - id: private-key
+        name: private key
+        language: system
+        entry: uv run python tools/file_hygiene.py private-key
+        types: [text]
+      - id: debug-statements
+        name: debug statements
+        language: system
+        entry: uv run python tools/file_hygiene.py debug-statements
+        types: [python]
+      - id: symlinks
+        name: broken symlinks
+        language: system
+        entry: uv run python tools/file_hygiene.py symlinks
+      - id: case-conflict
+        name: case conflict
+        language: system
+        entry: uv run python tools/file_hygiene.py case-conflict
+      - id: no-commit-to-main
+        name: no commit to main
+        language: system
+        entry: uv run python tools/file_hygiene.py no-commit-to-main
+        pass_filenames: false
+      - id: ruff-check
+        name: ruff check
+        language: system
+        entry: uv run ruff check --fix
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        language: system
+        entry: uv run ruff format
+        types: [python]
+      - id: mypy
+        name: mypy
+        language: system
+        entry: uv run mypy
+        types: [python]
+        pass_filenames: false
+      - id: codespell
+        name: codespell
+        language: system
+        entry: uv run codespell
+        pass_filenames: false
+      - id: commit-message-lint
+        name: lint commit message
+        language: system
+        entry: uv run python tools/check_commit_msg.py
+        stages: [commit-msg]
+      - id: uv-lock
+        name: uv lock --check
+        language: system
+        entry: uv lock --check
+        pass_filenames: false
+        stages: [pre-push]
+      - id: pytest-fast
+        name: pytest not slow
+        language: system
+        entry: uv run pytest -m "not slow"
+        pass_filenames: false
+        stages: [pre-push]

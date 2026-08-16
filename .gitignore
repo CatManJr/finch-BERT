@@ -1,0 +1,31 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Caches and coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pre-commit-cache/
+*.cover
+
+# Model weights must not be committed
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.ckpt
+*.onnx
+
+# Local editor files
+.DS_Store
+.cursor
