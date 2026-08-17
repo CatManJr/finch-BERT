@@ -1,4 +1,4 @@
-from sparsebert.domain import TokenBatch, highest_scoring_span
+from finchbert.domain import TokenBatch, highest_scoring_span
 
 
 def test_highest_scoring_span_respects_mask_and_length() -> None:

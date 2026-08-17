@@ -1,6 +1,6 @@
 import pytest
 
-from sparsebert.domain import SparsityReport
+from finchbert.domain import SparsityReport
 
 
 def test_sparsity_is_one_minus_density() -> None:

@@ -1,4 +1,4 @@
-from sparsebert import __version__
+from finchbert import __version__
 
 
 def test_version_is_present() -> None:

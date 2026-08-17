@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from sparsebert.application.ports import QuestionAnsweringModelPort, TokenizerPort
-from sparsebert.domain import AnswerSpan, highest_scoring_span
+from finchbert.application.ports import QuestionAnsweringModelPort, TokenizerPort
+from finchbert.domain import AnswerSpan, highest_scoring_span
 
 
 class AnswerQuestion:

@@ -1,7 +1,7 @@
 import pytest
 
-from sparsebert.application import AnswerQuestion
-from sparsebert.domain import TokenBatch
+from finchbert.application import AnswerQuestion
+from finchbert.domain import TokenBatch
 
 
 class _TestTokenizer:

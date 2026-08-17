@@ -1,6 +1,6 @@
 import pytest
 
-from sparsebert.domain import TokenBatch
+from finchbert.domain import TokenBatch
 
 
 def test_token_batch_rejects_mismatched_lengths() -> None:
