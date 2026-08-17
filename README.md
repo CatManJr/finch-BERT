@@ -1,4 +1,4 @@
-# finch-sparseBERT
+# finch-BERT
 
 CPU hosted question answering with unstructured-sparse oBERT and [finch-tensor](https://github.com/finch-tensor/finch-tensor) SpMM.
 

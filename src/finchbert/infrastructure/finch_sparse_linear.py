@@ -38,6 +38,14 @@ class FinchSparseLinear:
             None if bias is None else np.array(bias, dtype=_WEIGHT_DTYPE, copy=True)
         )
 
+    @property
+    def in_features(self) -> int:
+        return self._in_features
+
+    @property
+    def out_features(self) -> int:
+        return self._out_features
+
     @classmethod
     def from_dense_weight(
         cls,
@@ -59,14 +67,28 @@ class FinchSparseLinear:
     def transform(
         self, activations: tuple[tuple[float, ...], ...]
     ) -> tuple[tuple[float, ...], ...]:
-        activation_matrix = _activation_matrix(activations, self._in_features)
+        return _as_rows(
+            self.transform_matrix(_activation_matrix(activations, self._in_features))
+        )
+
+    def transform_matrix(self, activations: np.ndarray) -> np.ndarray:
+        activation_matrix = np.asarray(activations, dtype=_WEIGHT_DTYPE)
+        if activation_matrix.ndim != 2:
+            raise ValueError("activations must be a 2-D matrix.")
+        if activation_matrix.shape[1] != self._in_features:
+            raise ValueError(
+                f"each activation row must have {self._in_features} features."
+            )
+        if activation_matrix.shape[0] == 0:
+            return np.zeros((0, self._out_features), dtype=_WEIGHT_DTYPE)
+        matrix = np.ascontiguousarray(activation_matrix)
         try:
-            result = _finch_spmm(self._weight, activation_matrix, self._bias)
+            result = _finch_spmm(self._weight, matrix, self._bias)
         except Exception as exc:
             raise RuntimeError("Finch CSR SpMM failed.") from exc
-        if result.shape != (activation_matrix.shape[0], self._out_features):
+        if result.shape != (matrix.shape[0], self._out_features):
             raise RuntimeError("Finch CSR SpMM failed.")
-        return _as_rows(result)
+        return result
 
 
 def _require_weight_matrix(weight: np.ndarray) -> None:

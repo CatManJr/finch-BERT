@@ -80,6 +80,24 @@ def test_all_zero_weight_returns_bias_or_zeros() -> None:
     )
 
 
+def test_transform_matrix_matches_tuple_transform() -> None:
+    weight = np.array(
+        [
+            [1.0, 0.0, 2.0],
+            [0.0, 3.0, 0.0],
+        ],
+        dtype=np.float32,
+    )
+    bias = np.array([0.25, -0.5], dtype=np.float32)
+    activations = np.array([[1.0, 2.0, 3.0], [0.5, 0.0, 1.0]], dtype=np.float32)
+    linear = FinchSparseLinear.from_dense_weight(weight, bias)
+    from_tuples = np.asarray(linear.transform(_as_rows(activations)), dtype=np.float32)
+    from_matrix = linear.transform_matrix(activations)
+    np.testing.assert_allclose(
+        from_matrix, from_tuples, atol=_ORACLE_ABSOLUTE_TOLERANCE
+    )
+
+
 def test_empty_token_batch_returns_no_rows() -> None:
     weight = np.array([[1.0, 0.0, 2.0], [0.0, 3.0, 0.0]], dtype=np.float32)
     linear = FinchSparseLinear.from_dense_weight(weight)
