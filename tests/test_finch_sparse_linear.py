@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sparsebert.application import SparseLinearPort
-from sparsebert.infrastructure import FinchSparseLinear
+from finchbert.application import SparseLinearPort
+from finchbert.infrastructure import FinchSparseLinear
 
 _ORACLE_ABSOLUTE_TOLERANCE = 1e-4
 

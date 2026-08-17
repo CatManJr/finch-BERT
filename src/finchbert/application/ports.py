@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from sparsebert.domain import SparsityReport, TokenBatch
+from finchbert.domain import SparsityReport, TokenBatch
 
 
 class TokenizerPort(Protocol):

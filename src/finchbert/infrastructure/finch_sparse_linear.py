@@ -7,24 +7,20 @@ from __future__ import annotations
 import numpy as np
 from finch import (
     COMPILE_NUMBA,
-    DenseLevel,
-    ElementLevel,
     FiberTensor,
-    SparseListLevel,
     add,
     asarray,
     einsum,
-    element,
     to_numpy,
     with_default_scheduler,
 )
-from finch.codegen import NumpyBuffer
 from numpy.typing import ArrayLike
+
+from finchbert.infrastructure.csr_fiber import fiber_tensor_from_dense_matrix
 
 # \(Y = (W X^{\top})^{\top}\)
 _SPMM_EINSUM_SUBSCRIPTS = "ik,jk->ij"
 _WEIGHT_DTYPE = np.float32
-_CSR_FILL_VALUE = _WEIGHT_DTYPE(0.0)
 
 
 class FinchSparseLinear:
@@ -54,7 +50,7 @@ class FinchSparseLinear:
         if bias_array is not None:
             _require_bias_length(bias_array, int(weight_array.shape[0]))
         return cls(
-            weight=_fiber_tensor_from_csr_matrix(weight_array),
+            weight=fiber_tensor_from_dense_matrix(weight_array),
             in_features=int(weight_array.shape[1]),
             out_features=int(weight_array.shape[0]),
             bias=bias_array,
@@ -99,27 +95,6 @@ def _activation_matrix(
     if matrix.shape[1] != in_features:
         raise ValueError(f"each activation row must have {in_features} features.")
     return np.ascontiguousarray(matrix)
-
-
-def _fiber_tensor_from_csr_matrix(weight: np.ndarray) -> FiberTensor:
-    row_count, column_count = weight.shape
-    nonzero_rows, nonzero_cols = np.nonzero(weight)
-    values = np.ascontiguousarray(
-        weight[nonzero_rows, nonzero_cols],
-        dtype=_WEIGHT_DTYPE,
-    )
-    columns = np.ascontiguousarray(nonzero_cols, dtype=np.intp)
-    row_counts = np.bincount(nonzero_rows, minlength=row_count)
-    row_pointers = np.zeros(row_count + 1, dtype=np.intp)
-    np.cumsum(row_counts, out=row_pointers[1:])
-    values_level = ElementLevel(element(_CSR_FILL_VALUE), NumpyBuffer(values))
-    column_level = SparseListLevel(
-        values_level,
-        np.intp(column_count),
-        NumpyBuffer(row_pointers),
-        NumpyBuffer(columns),
-    )
-    return FiberTensor(DenseLevel(column_level, np.intp(row_count)))
 
 
 def _finch_spmm(

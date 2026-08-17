@@ -32,7 +32,7 @@ src = ["src", "tests", "tools"]
 select = ["F", "E", "W", "I", "B", "UP", "SIM", "RUF"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["sparsebert"]
+known-first-party = ["finchbert"]
 
 [tool.ruff.format]
 quote-style = "double"

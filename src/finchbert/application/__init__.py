@@ -1,5 +1,5 @@
-from sparsebert.application.answer_question import AnswerQuestion
-from sparsebert.application.ports import (
+from finchbert.application.answer_question import AnswerQuestion
+from finchbert.application.ports import (
     QuestionAnsweringModelPort,
     SparseLinearPort,
     TokenizerPort,

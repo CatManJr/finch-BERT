@@ -1,6 +1,6 @@
 import pytest
 
-from sparsebert.domain import BertConfig
+from finchbert.domain import BertConfig
 
 
 def test_bert_base_matches_published_shape() -> None:

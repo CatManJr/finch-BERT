@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from sparsebert.domain.token_batch import TokenBatch
+from finchbert.domain.token_batch import TokenBatch
 
 _DEFAULT_MAX_ANSWER_TOKENS = 30
 
