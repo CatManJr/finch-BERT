@@ -270,7 +270,7 @@ wheels = [
 ]
 
 [[package]]
-name = "finch-sparsebert"
+name = "finch-bert"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
