@@ -5,6 +5,7 @@ from finchbert.infrastructure.huggingface_weight_catalog import (
     DEFAULT_OBERT_SQUAD_MODEL,
     HuggingFaceWeightCatalog,
 )
+from finchbert.infrastructure.question_answering import QuestionAnswering
 
 __all__ = [
     "DEFAULT_OBERT_SQUAD_MODEL",
@@ -12,4 +13,5 @@ __all__ = [
     "FinchSparseLinear",
     "HuggingFaceTokenizer",
     "HuggingFaceWeightCatalog",
+    "QuestionAnswering",
 ]
