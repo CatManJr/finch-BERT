@@ -12,10 +12,13 @@ from safetensors.numpy import load_file
 
 from finchbert.domain import SparsityReport
 from finchbert.infrastructure.finch_sparse_linear import FinchSparseLinear
+from finchbert.infrastructure.pytorch_bin import load_pytorch_bin
 
 DEFAULT_OBERT_SQUAD_MODEL = (
     "RedHatAI/oBERT-12-upstream-pruned-unstructured-90-finetuned-squadv1"
 )
+_SAFETENSORS_SUFFIX = ".safetensors"
+_PYTORCH_MODEL_BIN = "pytorch_model.bin"
 _WEIGHT_DTYPE = np.float32
 _WEIGHT_SUFFIX = ".weight"
 _LINEAR_WEIGHT_SUFFIXES = (
@@ -103,7 +106,7 @@ def _load_checkpoint_tensors(source: str | Path) -> dict[str, np.ndarray]:
     path = Path(source)
     if path.exists():
         if path.is_file():
-            return dict(load_file(path))
+            return _load_weight_file(path)
         return _load_directory(path)
     if _looks_like_local_path(path):
         raise FileNotFoundError(f"checkpoint not found: {path}.")
@@ -112,7 +115,17 @@ def _load_checkpoint_tensors(source: str | Path) -> dict[str, np.ndarray]:
 
 def _looks_like_local_path(path: Path) -> bool:
     text = str(path)
-    return path.is_absolute() or path.suffix == ".safetensors" or text.startswith(".")
+    return (
+        path.is_absolute()
+        or path.suffix in {_SAFETENSORS_SUFFIX, ".bin"}
+        or text.startswith(".")
+    )
+
+
+def _load_weight_file(path: Path) -> dict[str, np.ndarray]:
+    if path.suffix == _SAFETENSORS_SUFFIX:
+        return dict(load_file(path))
+    return load_pytorch_bin(path)
 
 
 def _load_directory(directory: Path) -> dict[str, np.ndarray]:
@@ -122,7 +135,12 @@ def _load_directory(directory: Path) -> dict[str, np.ndarray]:
     index_path = directory / "model.safetensors.index.json"
     if index_path.is_file():
         return _load_sharded(directory, index_path)
-    raise FileNotFoundError(f"no safetensors checkpoint in {directory}.")
+    pytorch = directory / _PYTORCH_MODEL_BIN
+    if pytorch.is_file():
+        return load_pytorch_bin(pytorch)
+    raise FileNotFoundError(
+        f"no safetensors or pytorch_model.bin checkpoint in {directory}."
+    )
 
 
 def _load_sharded(directory: Path, index_path: Path) -> dict[str, np.ndarray]:
@@ -142,17 +160,24 @@ def _load_hub_repository(repo_id: str) -> dict[str, np.ndarray]:
         weights = Path(hf_hub_download(repo_id, filename="model.safetensors"))
         return dict(load_file(weights))
     except EntryNotFoundError:
-        try:
-            index_path = Path(
-                hf_hub_download(repo_id, filename="model.safetensors.index.json")
-            )
-        except EntryNotFoundError as exc:
-            raise FileNotFoundError(
-                f"repository {repo_id!r} has no safetensors checkpoint."
-            ) from exc
+        pass
+    try:
+        index_path = Path(
+            hf_hub_download(repo_id, filename="model.safetensors.index.json")
+        )
         index = json.loads(index_path.read_text(encoding="utf-8"))
         tensors: dict[str, np.ndarray] = {}
         for shard in dict.fromkeys(index["weight_map"].values()):
             shard_path = hf_hub_download(repo_id, filename=str(shard))
             tensors.update(load_file(shard_path))
         return tensors
+    except EntryNotFoundError:
+        pass
+    try:
+        weights = Path(hf_hub_download(repo_id, filename=_PYTORCH_MODEL_BIN))
+    except EntryNotFoundError as exc:
+        raise FileNotFoundError(
+            f"repository {repo_id!r} has no safetensors or "
+            "pytorch_model.bin checkpoint."
+        ) from exc
+    return load_pytorch_bin(weights)

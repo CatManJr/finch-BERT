@@ -9,6 +9,7 @@ dependencies = [
     "huggingface-hub>=1.0",
     "numpy>=2.0",
     "safetensors>=0.4.0",
+    "torch>=2.13.0",
     "transformers>=5.15.0",
 ]
 
@@ -28,7 +29,7 @@ package = false
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-src = ["src", "tests", "tools"]
+src = ["src", "tests", "tools", "scripts"]
 
 [tool.ruff.lint]
 select = ["F", "E", "W", "I", "B", "UP", "SIM", "RUF"]
@@ -44,11 +45,11 @@ docstring-code-format = true
 python_version = "3.12"
 strict = true
 mypy_path = "src"
-files = ["src", "tests", "tools"]
+files = ["src", "tests", "tools", "scripts"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src", "tools"]
+pythonpath = ["src", "tools", "scripts"]
 markers = [
     "slow: downloads checkpoints or runs full-model checks",
 ]

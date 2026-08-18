@@ -19,12 +19,13 @@ uv run pre-commit install --hook-type pre-commit --hook-type pre-push --hook-typ
 If PyPI is unstable in some regions (e.g., China):
 
 ```bash
-export UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+set UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 UV_HTTP_TIMEOUT=300 uv sync --group dev
 ```
-Before commit, unset mirror site.
+Before commit, unset mirror site to pass the pre-commit check.
 ```bash
 set UV_INDEX_URL=
+uv lock --default-index https://pypi.org/simple --refresh
 ```
 
 ## Checks
@@ -38,8 +39,14 @@ Direct commits to `main` are blocked by a local hook. Create a feature branch be
 
 ## Inference
 
-The question-answering CLI lands in a later slice:
+```bash
+uv run python scripts/infer.py --question "How many cats?" --context "There are two cats in the garden."
+```
+
+Long passages can be read from UTF-8 files:
 
 ```bash
-uv run python scripts/infer.py --question "..." --context "..."
+uv run python scripts/infer.py --question-file question.txt --context-file passage.txt
 ```
+
+`--model` selects a HuggingFace repo id or a local checkpoint directory. `--json` writes the span as JSON. `--max-sequence-length` overrides the default 128-token encoder limit.
