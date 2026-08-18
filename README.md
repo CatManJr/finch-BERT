@@ -22,6 +22,10 @@ If PyPI is unstable in some regions (e.g., China):
 export UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 UV_HTTP_TIMEOUT=300 uv sync --group dev
 ```
+Before commit, unset mirror site.
+```bash
+set UV_INDEX_URL=
+```
 
 ## Checks
 
